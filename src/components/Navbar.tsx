@@ -110,10 +110,7 @@ const Navbar = () => {
                   <Phone className="w-4 h-4 text-accent" />
                   <span>9396484899</span>
                 </div>
-                {/* <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-accent" />
-                  <span>contact@babatoursandtravels.in</span>
-                </div> */}
+                
               </div>
               <Button variant="luxury" size="sm" className="mt-4 w-full">
                 Book Now
