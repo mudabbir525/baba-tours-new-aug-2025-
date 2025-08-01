@@ -1,205 +1,320 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Phone, Mail, MapPin, Send, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Send, Phone, Mail, MapPin, Clock } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
-const ContactSection = () => {
-  const { toast } = useToast();
+const ContactPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: ""
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll get back to you soon.",
-    });
-    setFormData({ name: "", email: "", phone: "", message: "" });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   };
 
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: "Call Us",
-      value: "9396484899",
-      description: "Available 24/7"
-    },
-    {
-      icon: Mail,
-      title: "Email Us",
-      value: "contact@babatoursandtravels.in",
-      description: "Quick response guaranteed"
-    },
-    {
-      icon: MapPin,
-      title: "Visit Us",
-      value: "Vanasthalipuram, Hyderabad",
-      description: "Telangana, India"
-    },
-    {
-      icon: Clock,
-      title: "Working Hours",
-      value: "24/7 Service",
-      description: "Always at your service"
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('https://formspree.io/f/myzppqoe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setShowSuccess(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          message: ''
+        });
+        
+        // Hide success popup after 10 seconds
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 10000);
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // You can add error handling here if needed
+    } finally {
+      setIsSubmitting(false);
     }
-  ];
+  };
 
   return (
-    <section id="contact" className="py-20 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6">
-            Get In{" "}
-            <span className="bg-gradient-red bg-clip-text text-transparent">
-              Touch
-            </span>
-          </h2>
-          <div className="w-24 h-1 bg-gradient-red mx-auto mb-8 rounded-full"></div>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Ready to plan your next journey? Contact us for bookings and inquiries
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
+    <div className="min-h-screen bg-background py-20">
+      {/* Success Popup */}
+      <AnimatePresence>
+        {showSuccess && (
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           >
-            <Card className="bg-card/80 backdrop-blur-sm border-accent/20 shadow-luxury">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">
-                  Send us a message
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Input
-                        name="name"
-                        placeholder="Your Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="border-accent/20 focus:border-accent"
-                      />
-                    </div>
-                    <div>
-                      <Input
-                        name="phone"
-                        placeholder="Phone Number"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                        className="border-accent/20 focus:border-accent"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Input
-                      name="email"
-                      type="email"
-                      placeholder="Email Address"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="border-accent/20 focus:border-accent"
-                    />
-                  </div>
-                  <div>
-                    <Textarea
-                      name="message"
-                      placeholder="Your Message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      rows={6}
-                      className="border-accent/20 focus:border-accent"
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    variant="luxury" 
-                    size="lg" 
-                    className="w-full group"
-                  >
-                    <Send className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
-                    Send Message
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Contact Information */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="space-y-6"
-          >
-            {contactInfo.map((info, index) => (
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.5, opacity: 0, y: 50 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 25
+              }}
+              className="bg-background border border-border rounded-2xl p-8 max-w-md w-full text-center shadow-2xl"
+            >
               <motion.div
-                key={info.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4"
               >
-                <Card className="bg-card/60 backdrop-blur-sm border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-gold">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-gradient-red rounded-full flex items-center justify-center">
-                          <info.icon className="w-6 h-6 text-primary" />
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-primary mb-1">
-                          {info.title}
-                        </h3>
-                        <p className="text-lg font-medium text-foreground mb-1">
-                          {info.value}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {info.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <CheckCircle className="w-8 h-8 text-green-600" />
               </motion.div>
-            ))}
+              
+              <motion.h3
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-2xl font-bold text-foreground mb-2"
+              >
+                Message Sent Successfully!
+              </motion.h3>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-muted-foreground mb-6"
+              >
+                Thank you for contacting Baba Tours & Travels. We'll get back to you soon!
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Button 
+                  onClick={() => setShowSuccess(false)}
+                  variant="luxury"
+                  className="px-6"
+                >
+                  Continue
+                </Button>
+              </motion.div>
+              
+              {/* Progress bar */}
+              <motion.div
+                className="mt-6 h-1 bg-gray-200 rounded-full overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <motion.div
+                  className="h-full bg-accent rounded-full"
+                  initial={{ width: "100%" }}
+                  animate={{ width: "0%" }}
+                  transition={{ duration: 10, ease: "linear" }}
+                />
+              </motion.div>
+            </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Contact <span className="text-accent">Us</span>
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Ready to start your journey? Get in touch with us and let's plan your perfect trip.
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Information */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="space-y-8"
+            >
+              <div>
+                <h2 className="text-2xl font-bold text-foreground mb-6">Get in Touch</h2>
+                <p className="text-muted-foreground mb-8">
+                  We're here to help you plan the perfect trip. Contact us through any of the following methods.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <motion.div
+                  whileHover={{ x: 10 }}
+                  className="flex items-center space-x-4 p-4 bg-muted/50 rounded-xl border border-border"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Phone</h3>
+                    <p className="text-muted-foreground">9396484899</p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ x: 10 }}
+                  className="flex items-center space-x-4 p-4 bg-muted/50 rounded-xl border border-border"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Email</h3>
+                    <p className="text-muted-foreground">pasha2266@gmail.com</p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ x: 10 }}
+                  className="flex items-center space-x-4 p-4 bg-muted/50 rounded-xl border border-border"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Address</h3>
+                    <p className="text-muted-foreground"> Vanasthalipuram,Hyderabad</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="bg-muted/30 rounded-2xl p-8 border border-border"
+            >
+              <h2 className="text-2xl font-bold text-foreground mb-6">Send us a Message</h2>
+              
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 text-foreground"
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 text-foreground"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 text-foreground"
+                    placeholder="Your phone number"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                    Message *
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                    rows={5}
+                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 text-foreground resize-none"
+                    placeholder="Tell us about your travel plans..."
+                  />
+                </div>
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  variant="luxury"
+                  className="w-full py-3 text-lg font-semibold"
+                >
+                  {isSubmitting ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                    />
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5 mr-2" />
+                      Send Message
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default ContactSection;
+export default ContactPage;
