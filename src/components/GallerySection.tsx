@@ -2,6 +2,18 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import bus50Seater from "@/assets/bus-50-seater.jpg";
 import sedan from "@/assets/sedan.jpg";
+import vehicleA from "@/assets/a.webp";
+import vehicleB from "@/assets/b.webp";
+import vehicleC from "@/assets/c.webp";
+import vehicleD from "@/assets/d.webp";
+import vehicleE from "@/assets/e.webp";
+import vehicleF from "@/assets/f.webp";
+import vehicleG from "@/assets/g.webp";
+import vehicleH from "@/assets/h.webp";
+import vehicleI from "@/assets/i.webp";
+import vehicleJ from "@/assets/j.webp";
+import vehicleK from "@/assets/k.webp";
+import vehicleL from "@/assets/l.webp";
 
 
 const GallerySection = () => {
@@ -54,22 +66,105 @@ const GallerySection = () => {
       title: "Hussain Sagar",
       category: "Destinations",
       description: "Lakeside Scenic Rides"
-},
+    },
     {
       id: 8,
       image: "https://i.pinimg.com/736x/93/32/f8/9332f8a07ae4551efeec53325f0917c6.jpg",
       title: "HI-Tech City",
       category: "Destinations",
       description: "Corporate Travel Hub"
-},
+    },
     {
-      id: 8,
+      id: 9,
       image: "https://s7ap1.scene7.com/is/image/incredibleindia/birla-temple-hyderabad-secunderabad-telangana-1-attr-hero?qlt=82&ts=1742170051392",
-      title: "Birla Telmple",
+      title: "Birla Temple",
       category: "Destinations",
       description: "Peaceful Spiritual Retreat"
-}
-    
+    },
+    {
+      id: 10,
+      image: vehicleA,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 11,
+      image: vehicleB,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 12,
+      image: vehicleC,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 13,
+      image: vehicleD,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 14,
+      image: vehicleE,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 15,
+      image: vehicleF,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 16,
+      image: vehicleG,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 17,
+      image: vehicleH,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 18,
+      image: vehicleI,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 19,
+      image: vehicleJ,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 20,
+      image: vehicleK,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
+    {
+      id: 21,
+      image: vehicleL,
+      title: "",
+      category: "Vehicles",
+      description: ""
+    },
   ];
 
   return (
@@ -117,10 +212,12 @@ const GallerySection = () => {
                       {item.category}
                     </span>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <h3 className="text-lg font-bold mb-2">{item.title}</h3>
-                    <p className="text-sm opacity-90">{item.description}</p>
-                  </div>
+                  {(item.title || item.description) && (
+                    <div className="absolute bottom-4 left-4 right-4 text-white transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      {item.title && <h3 className="text-lg font-bold mb-2">{item.title}</h3>}
+                      {item.description && <p className="text-sm opacity-90">{item.description}</p>}
+                    </div>
+                  )}
                 </div>
               </Card>
             </motion.div>
